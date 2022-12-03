@@ -6,6 +6,9 @@ check:
 build:
 	cargo build
 
+build/optimized:
+	chmod +x scripts/app/build.sh && ./scripts/app/build.sh
+
 lint:
 	cargo fmt --all --check && cargo clippy --no-deps -- -D warnings
 

@@ -7,7 +7,7 @@ set -o pipefail
 
 [ -x "$(which docker)" ]                                    || (echo "docker not found" && exit 1)
 [ -x "$(which aws)" ]                                       || (echo "aws cli binary not found" && exit 1)
-test -f ${INIT_TABLE_DESCRIPTION:="scripts/db/table.json"} || (echo "table description not found at $INIT_TABLE_DESCRIPTION" && exit 1)
+test -f ${INIT_TABLE_DESCRIPTION:="scripts/db/table.json"}  || (echo "table description not found at $INIT_TABLE_DESCRIPTION" && exit 1)
 
 
 if [[ -z "${SKIP_DOCKER}" ]]

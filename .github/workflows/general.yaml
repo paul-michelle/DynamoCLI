@@ -1,0 +1,63 @@
+name: Lint And Test
+
+on: [push, pull_request]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: === CHECK OUT ===
+        uses: actions/checkout@v3
+
+      - name: === CACHE/RESTORE 3RD PARTY DEPS ===
+        id: cache-deps
+        uses: actions/cache@v3
+        env:
+          cache-name: dynamo-cli-cache-target
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: === PROCURE TOOLCHAIN ===
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            profile: minimal
+            components: rustfmt, clippy
+
+      - name: === LINT ===
+        run: make lint
+
+  build_optimized:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: === CHECK OUT ===
+        uses: actions/checkout@v3
+
+      - name: === CACHE/RESTORE 3RD PARTY DEPS ===
+        id: cache-deps
+        uses: actions/cache@v3
+        env:
+          cache-name: dynamo-cli-cache-target
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: === PROCURE TOOLCHAIN ===
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            profile: minimal
+
+      - name: === BUILD OPTIMIZED (x86_64-unknown-linux-musl) ===
+        run: make build/optimized
