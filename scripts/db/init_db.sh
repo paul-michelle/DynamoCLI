@@ -23,5 +23,5 @@ do
 done
 >&2 echo "DinamoDB is up and running at $ENDPOINT_URL"
 
-aws dynamodb create-table --cli-input-json "file://$INIT_TABLE_DESCRIPTION" --endpoint-url $ENDPOINT_URL --region hometown
+aws dynamodb create-table --cli-input-json "file://$INIT_TABLE_DESCRIPTION" --endpoint-url $ENDPOINT_URL --region "local"
 echo "Successfully created table described in $INIT_TABLE_DESCRIPTION"
