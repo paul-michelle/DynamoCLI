@@ -1,36 +1,64 @@
+use clap::{Args, Parser, Subcommand};
 use rusoto_core::Region;
-use rusoto_dynamodb::{DynamoDb, DynamoDbClient, ListTablesInput};
+use rusoto_dynamodb::DynamoDbClient;
+
+use dynamodb_cli_tool as lib;
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+#[command(propagate_version = true)]
+struct Args_ {
+    /// AWS region; specify 'local' to run queries against local instance of DenamoDB
+    #[arg(short, long)]
+    region: String,
+    /// Name of the table to query
+    #[arg(short, long)]
+    table: String,
+    /// CRUD action to perform
+    #[command(subcommand)]
+    action: Action,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum Action {
+    /// Insert item into the table (will perform upsert operation)
+    Insert(InsertionData),
+    /// List all items stored in the table (will perform a costly scan operation)
+    List,
+}
+
+#[derive(Args, Debug)]
+pub struct InsertionData {
+    /// First name to store
+    #[arg(short, long)]
+    first_name: String,
+    /// Last name to store
+    #[arg(short, long)]
+    last_name: String,
+}
 
 #[tokio::main]
 async fn main() {
+    let args = Args_::parse();
+
     let region = Region::Custom {
         name: "local".to_owned(),
         endpoint: "http://127.0.0.1:8000".to_owned(),
     };
-
     let client = DynamoDbClient::new(region);
-    let list_tables_input: ListTablesInput = Default::default();
-    let list_tables_res = client.list_tables(list_tables_input).await;
 
-    if let Err(e) = list_tables_res {
-        println!("Error: {:?}", e);
-        return;
-    }
-
-    let tables_names_list = list_tables_res.unwrap().table_names;
-    if tables_names_list.is_none() {
-        println!("No tables in database!");
-        return;
-    }
-
-    let tables_names_list = tables_names_list.unwrap();
-    if tables_names_list.is_empty() {
-        println!("No tables in database!");
-        return;
-    }
-
-    println!("Tables in database:");
-    for name in tables_names_list {
-        println!("{}", name)
+    match args.action {
+        Action::Insert(data) => {
+            if let Err(e) =
+                lib::upsert_item(&client, args.table, data.first_name, data.last_name).await
+            {
+                println!("{e}")
+            }
+        }
+        Action::List => {
+            if let Err(e) = lib::scan_table(&client, args.table).await {
+                println!("{e}")
+            }
+        }
     }
 }

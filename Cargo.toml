@@ -1,11 +1,23 @@
 [package]
 name = "dynamodb_cli_tool"
+description = "CLI tool to run CRUD ops against DynamoDB. A table's pk will comprise of Uid (partition key) and TimeStamp (sort key)."
+keywords = ["dynamodb", "dynamodb_local"]
+categories = ["command-line-utilities"]
+
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.63.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Pavel Mikhalkevich <paul.michelle.prod@gmail.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/rustworthy/dynamo_cli_tool"
 
 [dependencies]
 rusoto_core = "0.48.0"
 rusoto_dynamodb = "0.48.0"
 tokio = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+openssl = { version = "0.10", features = ["vendored"] }
+clap = { version = "4.0.29", features = ["derive"] }
+thiserror = "1.0"
+uuid = { version="1", features= ["v4"] }

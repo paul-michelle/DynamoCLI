@@ -6,8 +6,8 @@ check:
 build:
 	cargo build
 
-run:
-	cargo run
+help:
+	cargo run -- --help
 
 build/optimized:
 	chmod +x scripts/app/build.sh && ./scripts/app/build.sh
