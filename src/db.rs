@@ -23,9 +23,7 @@ pub async fn upsert_item(
     let upd = UpdateItemInput {
         table_name: table,
         key: pk,
-        update_expression: Some(format!(
-            "SET first_name = :first_name, last_name = :last_name"
-        )),
+        update_expression: Some("SET first_name = :first_name, last_name = :last_name".to_string()),
         expression_attribute_values: Some(values),
         ..Default::default()
     };

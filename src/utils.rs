@@ -16,5 +16,5 @@ pub fn attr2str(attr: &mut AttributeValue) -> Result<String, Error> {
             "Failed to convert DynamoDB attr to string".to_string(),
         ));
     }
-    Ok(val.unwrap().to_owned())
+    Ok(val.unwrap())
 }
